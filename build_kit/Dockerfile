@@ -16,4 +16,4 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 
-ENTRYPOINT ["phosphobot", "run", "--port", "80"]
+ENTRYPOINT ["/usr/local/bin/phosphobot", "run", "--port", "80"]
