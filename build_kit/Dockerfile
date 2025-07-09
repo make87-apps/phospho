@@ -11,7 +11,7 @@ RUN apt-get update \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl gnupg && \
-    curl -fsSL https://raw.githubusercontent.com/phospho-app/phosphobot/main/install.sh | bash && \
+    curl -fsSL https://raw.githubusercontent.com/phospho-app/phosphobot/main/install.sh | sed 's/sudo //g' | bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
