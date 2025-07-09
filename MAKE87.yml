@@ -1,0 +1,7 @@
+build_kit:
+  name: python3
+  version: latest
+provider_endpoints:
+  - name: EXAMPLE_ENDPOINT
+    requester_message_type: make87_messages.text.text_plain.PlainText
+    provider_message_type: make87_messages.text.text_plain.PlainText
