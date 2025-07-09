@@ -4,7 +4,7 @@ interfaces:
     protocol: HTTP
     default_port:
       name: phiospho-server
-      protocol: TCP
+      protocol: HTTP
       target_port: 80
       is_dev_interface: true
 container_config:
