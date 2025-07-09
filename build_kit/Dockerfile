@@ -6,6 +6,7 @@ RUN apt-get update \
         python3-pip \
         python3 \
         libpython3-dev \
+        iproute2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
