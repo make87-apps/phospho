@@ -1,7 +1,17 @@
-build_kit:
-  name: python3
-  version: latest
-provider_endpoints:
-  - name: EXAMPLE_ENDPOINT
-    requester_message_type: make87_messages.text.text_plain.PlainText
-    provider_message_type: make87_messages.text.text_plain.PlainText
+version: 1
+interfaces:
+  - name: phospho-server
+    protocol: HTTP
+    default_port:
+      name: phiospho-server
+      protocol: TCP
+      target_port: 80
+      is_dev_interface: true
+container_config:
+  privileged: true
+  volumes:
+    - /dev:/dev:ro,S
+    - /sys:/sys:ro,S
+build:
+  custom:
+    dockerfile: ./build_kit/Dockerfile
