@@ -2,7 +2,6 @@ FROM ghcr.io/make87/debian:bookworm AS base-image
 
 ARG VIRTUAL_ENV=/make87/venv
 
-# Install Python and required build tools, plus uv
 RUN apt-get update \
     && apt-get install --no-install-suggests --no-install-recommends -y \
         build-essential \
@@ -10,7 +9,7 @@ RUN apt-get update \
         python3-venv \
         curl ca-certificates \
     && python3 -m venv ${VIRTUAL_ENV} \
-    && curl -LsSf https://astral.sh/uv/install.sh | bash -s -- --yes --bin-dir ${VIRTUAL_ENV}/bin \
+    && curl -LsSf https://astral.sh/uv/install.sh | bash -s -- --bin-dir ${VIRTUAL_ENV}/bin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
