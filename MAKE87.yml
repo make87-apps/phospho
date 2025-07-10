@@ -1,12 +1,16 @@
 version: 1
 interfaces:
   - name: phospho-server
-    protocol: HTTP
+    protocol: http
     default_port:
-      name: phiospho-server
+      name: phospho-server
       protocol: HTTP
-      target_port: 80
+      target_port: 8473
       is_dev_interface: true
+    servers:
+      - name: phosphobot-api
+        spec:
+          string: phosphobot
   - name: pi0-interface
     protocol: http
     clients:
@@ -19,8 +23,5 @@ container_config:
     - /dev:/dev:ro,S
     - /sys:/sys:ro,S
 build:
-  build_kit:
-    name: python3
-dev_build:
-  build_kit:
-    name: python3
+  custom:
+    dockerfile: build_kit/Dockerfile
