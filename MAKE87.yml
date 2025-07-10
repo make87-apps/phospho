@@ -7,11 +7,20 @@ interfaces:
       protocol: HTTP
       target_port: 80
       is_dev_interface: true
+  - name: pi0-interface
+    protocol: http
+    clients:
+      - name: pi0
+        spec:
+          string: openpi
 container_config:
   privileged: true
   volumes:
     - /dev:/dev:ro,S
     - /sys:/sys:ro,S
 build:
-  custom:
-    dockerfile: ./build_kit/Dockerfile
+  build_kit:
+    name: python3
+dev_build:
+  build_kit:
+    name: python3
