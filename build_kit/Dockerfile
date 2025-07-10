@@ -10,7 +10,8 @@ RUN apt-get update \
         curl ca-certificates \
     && python3 -m venv ${VIRTUAL_ENV} \
     && curl -LsSf https://astral.sh/uv/install.sh | bash -s -- \
-    && mv /root/.cargo/bin/uv ${VIRTUAL_ENV}/bin/uv \
+    && mv /root/.local/bin/uv ${VIRTUAL_ENV}/bin/uv \
+    && mv /root/.local/bin/uvx ${VIRTUAL_ENV}/bin/uvx \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
