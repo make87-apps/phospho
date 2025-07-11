@@ -1,6 +1,7 @@
 import logging
 import time
 from datetime import datetime, timezone
+from typing import Optional
 
 import cv2
 import httpx
@@ -18,7 +19,6 @@ from phosphobot.app import app
 from fastapi.middleware.cors import CORSMiddleware
 import make87
 from phosphobot.camera import AllCameras
-from shtab import Optional
 
 logger = logging.getLogger(__name__)
 
