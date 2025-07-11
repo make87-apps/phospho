@@ -12,6 +12,7 @@ from make87.encodings import ProtobufEncoder
 from make87.interfaces.zenoh import ZenohInterface
 from make87_messages.image.compressed.image_jpeg_pb2 import ImageJPEG
 from phosphobot.am import Pi0
+from pyparsing import Empty
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +100,7 @@ async def run_model():
             continue
 
 def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
-    response = requester.get()
+    response = requester.get(payload=ProtobufEncoder(message_type=Empty).encode(Empty()))
     for r in response:
         if r.ok is not None:
             jpeg_bytes = ProtobufEncoder(message_type=ImageJPEG).decode(r.ok.payload.to_bytes())
