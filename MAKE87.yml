@@ -17,6 +17,35 @@ interfaces:
       - name: pi0
         spec:
           string: openpi
+  - name: zenoh-client
+    protocol: zenoh
+    default_port:
+      name: zenoh-client
+      protocol: TCP
+      target_port: 7447
+    publishers:
+      - name: AGENT_LOGS
+        spec:
+          string: string
+        encoding: utf-8
+    providers:
+      - name: AGENT_CHAT
+        request_spec:
+          string: string
+        response_spec:
+          string: string
+        encoding: utf-8
+    requesters:
+      - name: GET_WRIST_IMAGE
+        request_spec:
+          make87_message: make87_messages.core.Empty
+        response_spec:
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
+      - name: GET_CONTEXT_IMAGE
+        request_spec:
+          make87_message: make87_messages.core.Empty
+        response_spec:
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
 container_config:
   privileged: true
   volumes:

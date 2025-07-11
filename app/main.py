@@ -2,16 +2,23 @@ import logging
 import time
 from datetime import datetime, timezone
 
+import cv2
 import httpx
 import numpy as np
 import uvicorn
+import zenoh
+from make87.encodings import ProtobufEncoder
+from make87.interfaces.zenoh import ZenohInterface
 from make87_messages.core.header_pb2 import Header
+from make87_messages.image.compressed.image_jpeg_pb2 import ImageJPEG
 from make87_messages.text.text_plain_pb2 import PlainText
+from numpy import ndarray
 from phosphobot.am import Pi0
 from phosphobot.app import app
 from fastapi.middleware.cors import CORSMiddleware
 import make87
 from phosphobot.camera import AllCameras
+from shtab import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -34,45 +41,81 @@ async def run_model():
         )
         return
 
+
+    zenoh_interface = ZenohInterface(name="zenoh-client", make87_config=config)
+    action_publisher = zenoh_interface.get_publisher(name="AGENT_LOGS")
+    agent_chat_provider = zenoh_interface.get_provider(name="AGENT_CHAT")
+    wrist_cam = zenoh_interface.get_requester(name="GET_WRIST_IMAGE")
+    context_cam = zenoh_interface.get_requester(name="GET_CONTEXT_IMAGE")
+
     PHOSPHOBOT_API_URL = f"http://localhost:{PHOSPHO_SERVER_PORT}"
 
-    # Get a camera frame
-    allcameras = AllCameras()
-
-    # Need to wait for the cameras to initialize
-    time.sleep(1)
 
     # Instantiate the model
     model = Pi0(server_url=pi_client.vpn_ip, server_port=pi_client.vpn_port)
 
     while True:
-        # Get the frames from the cameras
-        # We will use this model: PLB/pi0-so100-orangelegobrick-wristcam
-        # It requires 2 cameras (a context cam and a wrist cam)
-        images = [
-            allcameras.get_rgb_frame(camera_id=0, resize=(240, 320)),
-            allcameras.get_rgb_frame(camera_id=1, resize=(240, 320)),
-        ]
 
-        # Get the robot state
-        state = httpx.post(f"{PHOSPHOBOT_API_URL}/joints/read").json()
+        try:
+            pass
+            prompt = agent_chat_provider.recv()
 
-        inputs = {
-            "state": np.array(state["angles_rad"]),
-            "images": np.array(images),
-            "prompt": "Pick up the screw driver",
-        }
 
-        # Go through the model
-        actions = model(inputs)
+            wrist_image = get_rgb_from_requester(requester=wrist_cam)
+            context_image = get_rgb_from_requester(requester=context_cam)
+            if not context_image:
+                prompt.reply(
+                    key_expr=prompt.key_expr,
+                    payload="Context image not available".encode("utf-8")
+                )
+                continue
+            if not wrist_image:
+                prompt.reply(
+                    key_expr=prompt.key_expr,
+                    payload="Wrist image not available".encode("utf-8")
+                )
+                continue
 
-        for action in actions:
-            # Send the new joint postion to the robot
-            httpx.post(
-                f"{PHOSPHOBOT_API_URL}/joints/write", json={"angles": action.tolist()}
-            )
-            # Wait to respect frequency control (30 Hz)
-            time.sleep(1 / 30)
+            state = httpx.post(f"{PHOSPHOBOT_API_URL}/joints/read").json()
+
+            inputs = {
+                "state": np.array(state["angles_rad"]),
+                "images": np.array([context_image, wrist_image]),
+                "prompt": prompt,
+            }
+
+            # Go through the model
+            actions = model(inputs)
+
+            for action in actions:
+                try:
+                    action_publisher.put(payload=str(action).encode("utf-8"))
+                except Exception as e:
+                    logger.error(f"Error publishing action: {e}")
+                # Send the new joint postion to the robot
+                httpx.post(
+                    f"{PHOSPHOBOT_API_URL}/joints/write", json={"angles": action.tolist()}
+                )
+                # Wait to respect frequency control (30 Hz)
+                time.sleep(1 / 30)
+            prompt.reply(key_expr=prompt.key_expr, payload="Action executed successfully".encode("utf-8"))
+
+        except Exception as e:
+            logger.error(f"Error in model loop: {e}")
+            time.sleep(1)
+            continue
+
+def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
+    response = requester.get()
+    for r in response:
+        if r.ok is not None:
+            jpeg_bytes = ProtobufEncoder(message_type=ImageJPEG).decode(r.ok.payload.to_bytes())
+            ndarray = np.frombuffer(jpeg_bytes.data, dtype=np.uint8)
+            image = cv2.imdecode(ndarray, cv2.IMREAD_COLOR)
+            # resize to (240, 320)
+            ret_image = cv2.resize(image, (320, 240))
+            return ret_image
+    return None
 
 
 
