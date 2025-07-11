@@ -1,24 +1,17 @@
 import logging
 import time
-from datetime import datetime, timezone
 from typing import Optional
 
 import cv2
 import httpx
+import make87
 import numpy as np
 import uvicorn
 import zenoh
 from make87.encodings import ProtobufEncoder
 from make87.interfaces.zenoh import ZenohInterface
-from make87_messages.core.header_pb2 import Header
 from make87_messages.image.compressed.image_jpeg_pb2 import ImageJPEG
-from make87_messages.text.text_plain_pb2 import PlainText
-from numpy import ndarray
 from phosphobot.am import Pi0
-from phosphobot.app import app
-from fastapi.middleware.cors import CORSMiddleware
-import make87
-from phosphobot.camera import AllCameras
 
 logger = logging.getLogger(__name__)
 
@@ -120,20 +113,7 @@ def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
 
 
 async def run_app():
-    app.user_middleware = [
-        m for m in app.user_middleware
-        if m.cls is not CORSMiddleware
-    ]
-    app.middleware_stack = app.build_middleware_stack()
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
+    from phosphobot.app import app
     config = uvicorn.Config(app=app, host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False)
     server = uvicorn.Server(config)
     await server.serve()
