@@ -10,9 +10,9 @@ import uvicorn
 import zenoh
 from make87.encodings import ProtobufEncoder
 from make87.interfaces.zenoh import ZenohInterface
+from make87_messages.core.empty_pb2 import Empty
 from make87_messages.image.compressed.image_jpeg_pb2 import ImageJPEG
 from phosphobot.am import Pi0
-from pyparsing import Empty
 
 logger = logging.getLogger(__name__)
 
