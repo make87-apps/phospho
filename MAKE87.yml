@@ -41,11 +41,13 @@ interfaces:
           make87_message: make87_messages.core.Empty
         response_spec:
           make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
+        encoding: proto
       - name: GET_CONTEXT_IMAGE
         request_spec:
           make87_message: make87_messages.core.Empty
         response_spec:
           make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
+        encoding: proto
 container_config:
   privileged: true
   volumes:
