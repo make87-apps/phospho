@@ -16,7 +16,7 @@ from phosphobot.am import Pi0
 
 logger = logging.getLogger(__name__)
 
-PHOSPHO_SERVER_PORT = 8473
+PHOSPHO_SERVER_PORT = 8080
 
 async def run_model():
     config = make87.config.load_config_from_env()
