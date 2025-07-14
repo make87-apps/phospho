@@ -16,7 +16,7 @@ from phosphobot.am import Pi0
 
 logger = logging.getLogger(__name__)
 
-PHOSPHO_SERVER_PORT = 8080
+PHOSPHO_SERVER_PORT = 8473
 
 async def run_model():
     config = make87.config.load_config_from_env()
@@ -122,11 +122,10 @@ def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
 
 
 async def run_app():
-    from phosphobot.app import app
     from phosphobot.configs import config as phospho_config
     phospho_config.PORT = PHOSPHO_SERVER_PORT  # <- force app's config to match
 
-    config = uvicorn.Config(app=app, host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False)
+    config = uvicorn.Config("phosphobot.app:app", host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False)
     server = uvicorn.Server(config)
     await server.serve()
 

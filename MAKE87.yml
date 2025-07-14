@@ -5,7 +5,7 @@ interfaces:
     default_port:
       name: phospho-server
       protocol: HTTP
-      target_port: 8080
+      target_port: 8473
       publish_mode: Ingress
       is_system_interface: false
       is_dev_interface: true
