@@ -6,6 +6,8 @@ interfaces:
       name: phospho-server
       protocol: HTTP
       target_port: 8473
+      publish_mode: Ingress
+      is_system_interface: false
       is_dev_interface: true
     servers:
       - name: phosphobot-api
@@ -23,6 +25,9 @@ interfaces:
       name: zenoh-client
       protocol: TCP
       target_port: 7447
+      publish_mode: Ingress
+      is_system_interface: false
+      is_dev_interface: false
     publishers:
       - name: AGENT_LOGS
         spec:
@@ -38,26 +43,26 @@ interfaces:
     requesters:
       - name: GET_WRIST_IMAGE
         request_spec:
-          make87_message: make87_messages.core.Empty
+          make87_message: make87_messages.core.Empty:9u7fab
         response_spec:
-          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG:ro11zj
         encoding: proto
       - name: GET_CONTEXT_IMAGE
         request_spec:
-          make87_message: make87_messages.core.Empty
+          make87_message: make87_messages.core.Empty:9u7fab
         response_spec:
-          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG:ro11zj
         encoding: proto
 container_config:
   privileged: true
   volumes:
     - /dev:/dev:ro,S
     - /sys:/sys:ro,S
+config: null
 build:
   custom:
     dockerfile: build_kit/Dockerfile
-
-dev-build:
+dev_build:
   build_kit:
     name: python3
     entrypoints:
