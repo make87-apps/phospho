@@ -57,13 +57,13 @@ async def run_model():
 
             wrist_image = get_rgb_from_requester(requester=wrist_cam)
             context_image = get_rgb_from_requester(requester=context_cam)
-            if not context_image:
+            if context_image is None:
                 prompt.reply(
                     key_expr=prompt.key_expr,
                     payload="Context image not available".encode("utf-8")
                 )
                 continue
-            if not wrist_image:
+            if wrist_image is None:
                 prompt.reply(
                     key_expr=prompt.key_expr,
                     payload="Wrist image not available".encode("utf-8")
