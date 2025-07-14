@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "phospho-run"
 version = "0.0.1"
 dependencies = [
-  "make87[zenoh, protobuf]==0.1.0.dev6",
+  "make87[zenoh, protobuf]==0.1.0.dev7",
   "make87_messages",
   "phosphobot",
   "openpi-client>=0.1.0",
