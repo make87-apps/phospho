@@ -135,9 +135,10 @@ async def run_app():
 
 
 async def main():
-    app_task = asyncio.create_task(run_app())
+    # app_task = asyncio.create_task(run_app())
     model_task = asyncio.create_task(run_model())
 
+    app_task = run_app()
     await asyncio.gather(app_task, model_task)
 
 

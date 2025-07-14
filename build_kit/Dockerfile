@@ -11,6 +11,7 @@ RUN apt-get update \
         curl \
         ca-certificates \
         git \
+        bash \
     && python3 -m venv ${VIRTUAL_ENV} \
     && curl -LsSf https://astral.sh/uv/install.sh | bash -s -- \
     && mv /root/.local/bin/uv ${VIRTUAL_ENV}/bin/uv \
