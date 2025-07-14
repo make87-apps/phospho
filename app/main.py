@@ -124,8 +124,11 @@ def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
 async def run_app():
     from phosphobot.configs import config as phospho_config
     phospho_config.PORT = PHOSPHO_SERVER_PORT  # <- force app's config to match
+    phospho_config.ENABLE_REALSENSE = False
+    phospho_config.ENABLE_CAMERAS = False
+    phospho_config.TELEMETRY = True
 
-    config = uvicorn.Config("phosphobot.app:app", host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False)
+    config = uvicorn.Config("phosphobot.app:app", host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False, timeout_graceful_shutdown=1,)
     server = uvicorn.Server(config)
     await server.serve()
 
