@@ -6,7 +6,7 @@ import cv2
 import httpx
 import make87
 import numpy as np
-import uvicorn
+import asyncio
 import contextlib
 import zenoh
 from make87.encodings import ProtobufEncoder
@@ -121,26 +121,21 @@ def get_rgb_from_requester(requester: zenoh.Querier) -> Optional[np.ndarray]:
     return None
 
 
-
-async def run_app():
-    from phosphobot.configs import config as phospho_config
-    phospho_config.PORT = PHOSPHO_SERVER_PORT  # <- force app's config to match
-    phospho_config.ENABLE_REALSENSE = False
-    phospho_config.ENABLE_CAMERAS = False
-    phospho_config.TELEMETRY = True
-
-    config = uvicorn.Config("phosphobot.app:app", host="0.0.0.0", port=PHOSPHO_SERVER_PORT, reload=False, timeout_graceful_shutdown=1,)
-    server = uvicorn.Server(config)
-    await server.serve()
-
-
-
 async def main():
     model_task = asyncio.create_task(run_model())
 
-    # Replace this with the actual CLI command for phosphobot
     proc = await asyncio.create_subprocess_exec(
-        "phosphobot", "run", "--port", str(PHOSPHO_SERVER_PORT),
+        "phosphobot", "run",
+        "--port", str(PHOSPHO_SERVER_PORT),
+        "--no-realsense",
+        "--no-cameras",
+        "--telemetry",
+        "--no-only-simulation",
+        "--no-simulate-cameras",
+        "--can",
+        "--no-reload",
+        "--no-profile",
+        "--simulation", "headless",
     )
 
     try:
@@ -150,11 +145,5 @@ async def main():
         with contextlib.suppress(asyncio.CancelledError):
             await model_task
 
-
 if __name__ == "__main__":
-    import asyncio
-
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        logger.info("Shutting down the server...")
+    asyncio.run(main())
