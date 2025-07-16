@@ -65,5 +65,5 @@ build:
 dev_build:
   build_kit:
     name: python3
-    entrypoints:
-      ide: "RUN_MODE=ide /entrypoint-dev.sh /home/state/code"
+    build_additions:
+      ide: vscode_server_py3
