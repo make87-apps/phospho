@@ -65,5 +65,5 @@ build:
 dev_build:
   build_kit:
     name: python3
-    additionss:
-      ide: vscode_server_py32
+    additions:
+      ide: vscode_server_py3
