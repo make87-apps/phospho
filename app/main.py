@@ -7,6 +7,7 @@ import httpx
 import make87
 import numpy as np
 import uvicorn
+import contextlib
 import zenoh
 from make87.encodings import ProtobufEncoder
 from make87.interfaces.zenoh import ZenohInterface
@@ -135,11 +136,19 @@ async def run_app():
 
 
 async def main():
-    # app_task = asyncio.create_task(run_app())
     model_task = asyncio.create_task(run_model())
 
-    app_task = run_app()
-    await asyncio.gather(app_task, model_task)
+    # Replace this with the actual CLI command for phosphobot
+    proc = await asyncio.create_subprocess_exec(
+        "phosphobot", "run", "--port", str(PHOSPHO_SERVER_PORT),
+    )
+
+    try:
+        await proc.wait()
+    finally:
+        model_task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await model_task
 
 
 if __name__ == "__main__":

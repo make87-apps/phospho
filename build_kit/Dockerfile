@@ -10,6 +10,7 @@ RUN apt-get update \
         python3-venv \
         curl \
         ca-certificates \
+        iproute2 \
         git \
         bash \
     && python3 -m venv ${VIRTUAL_ENV} \
