@@ -43,15 +43,15 @@ interfaces:
     requesters:
       - name: GET_WRIST_IMAGE
         request_spec:
-          make87_message: make87_messages.core.Empty:9u7fab
+          make87_message: make87_messages.core.Empty
         response_spec:
-          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG:ro11zj
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
         encoding: proto
       - name: GET_CONTEXT_IMAGE
         request_spec:
-          make87_message: make87_messages.core.Empty:9u7fab
+          make87_message: make87_messages.core.Empty
         response_spec:
-          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG:ro11zj
+          make87_message: make87_messages.image.compressed.image_jpeg.ImageJPEG
         encoding: proto
 container_config:
   privileged: true
@@ -63,7 +63,7 @@ build:
   custom:
     dockerfile: build_kit/Dockerfile
 dev_build:
-  build_kit:
-    name: python3
+  custom:
+    dockerfile: build_kit/Dockerfile.dev
     build_additions:
       ide: vscode_server_py3
