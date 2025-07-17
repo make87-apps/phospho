@@ -15,6 +15,25 @@ from make87_messages.core.empty_pb2 import Empty
 from make87_messages.image.compressed.image_jpeg_pb2 import ImageJPEG
 from phosphobot.am import Pi0
 
+
+class Pi02(Pi0):
+
+    def sample_actions(self, inputs: dict) -> np.ndarray:
+        observation = {
+            "state": inputs["state"],
+            "prompt": inputs["prompt"],
+        }
+
+        for i in range(0, len(self.image_keys)):
+            observation[self.image_keys[i]] = inputs["images"][0]
+
+        # Call the remote server
+        action_chunk = self.client.infer(observation)["actions"]
+
+        # TODO: check action_chunk is of type np.ndarray
+        return action_chunk
+
+
 logger = logging.getLogger(__name__)
 
 PHOSPHO_SERVER_PORT = 8473
@@ -38,11 +57,12 @@ async def run_model():
     context_cam = zenoh_interface.get_requester(name="GET_CONTEXT_IMAGE")
 
     PHOSPHOBOT_API_URL = f"http://localhost:{PHOSPHO_SERVER_PORT}"
-    model = Pi0(server_url=pi_client.vpn_ip, server_port=pi_client.vpn_port)
+    model = Pi02(server_url=pi_client.vpn_ip, server_port=pi_client.vpn_port)
 
     while True:
         try:
             prompt = agent_chat_provider.recv()
+            text_prompt = prompt.payload.to_bytes().decode("utf-8")
         except Exception as e:
             logger.error(f"Error receiving prompt: {e}")
             time.sleep(1)
@@ -77,9 +97,9 @@ async def run_model():
 
         try:
             inputs = {
-                "state": np.array(state["angles_rad"]),
+                "state": np.array(state["angles"]),
                 "images": np.array([context_image, wrist_image]),
-                "prompt": prompt,
+                "prompt": text_prompt,
             }
             actions = model(inputs)
         except Exception as e:
